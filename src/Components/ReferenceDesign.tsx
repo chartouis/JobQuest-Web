@@ -5,7 +5,7 @@ interface ReferenceDesignProps {
   targetDesign: any;
 }
 
-const ReferenceDesign: React.FC<ReferenceDesignProps> = ({ targetDesign }) => {
+const ReferenceDesign: React.FC<ReferenceDesignProps> = () => {
   return (
     <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
       <h3 className="text-xl font-bold text-[#07273c] mb-4">Reference Design</h3>
