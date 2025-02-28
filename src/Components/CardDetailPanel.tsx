@@ -1,7 +1,6 @@
 import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../config";
 
 interface Card {
   title: string;
@@ -17,17 +16,111 @@ const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ activeCard }) => {
   const nav = useNavigate();
   if (!activeCard) return null;
 
-  const generatePage = async () => {
-    await axios
-      .post(API_URL + "/page?prof=" + activeCard.title)
-      .then((resp) => {
-        const page = JSON.stringify(resp.data)
+  // const generatePage = async () => {
+  //   await axios
+  //     .post(API_URL + "/page?prof=" + activeCard.title)
+  //     .then((resp) => {
+  //       const page = JSON.stringify(resp.data);
+  //       localStorage.setItem("aiPage", page);
+  //     })
+  //     .finally(() => {
+  //       nav("/career/description");
+  //     });
+  // };
+
+  const generatePage =async (): Promise<Career> => {
+    const APIKEY =
+      "b116edccd7faa07443f4610fa7c44182936a40ce54deb73de9c458c4e72b3289";
+
+    const asd = `Generate structured JSON for a given career. The JSON must strictly follow this format:
+    
+json
+
+{
+    "title": "",
+    "description": "",
+    "responsibilities": [],
+    "skills": [],
+    "tasks": [
+        { "description": "", "difficulty": "" },
+        { "description": "", "difficulty": "" },
+        { "description": "", "difficulty": "" }
+    ],
+    "quiz": [
+        { "question": "", "options": ["", "", "", ""], "answer": "" },
+        { "question": "", "options": ["", "", "", ""], "answer": "" }
+    ]
+}
+Include:
+
+title: Name of the career.
+description: A short explanation of the career.
+responsibilities: A list of key duties.
+skills: A list of required skills.
+tasks: Three example tasks, each with a difficulty level ('easy', 'medium', or 'hard').
+quiz: Two multiple-choice questions with four answer options each and the correct answer specified.
+Return ONLY JSON, with no additional text. Generate it for: ${activeCard.title}`;
+
+    // Escape newlines and quotes to avoid invalid JSON
+    const safeAsd = asd.replace(/\n/g, "\\n").replace(/"/g, '\\"');
+
+    return await axios
+      .post(
+        "https://api.together.xyz/v1/chat/completions",
+        {
+          model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+          temperature: 1.0,
+          context_length_exceeded_behavior: "error",
+          messages: [
+            {
+              role: "user",
+              content: safeAsd,
+            },
+          ],
+        },
+        {
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+            authorization: `Bearer ${APIKEY}`,
+          },
+        }
+      )
+      .then((response) => {
+        // Extract the nested JSON string from AI's message content
+        const careerJson = response.data.choices[0].message.content;
+
+        // Parse the actual career data
+        const page = careerJson
         localStorage.setItem("aiPage", page);
+        return JSON.parse(careerJson) as Career;
+      })
+      .catch((error) => {
+        throw new Error(`Failed to parse AI response: ${error.message}`);
       })
       .finally(() => {
         nav("/career/description");
       });
   };
+
+  // Type definition for the Career object
+  interface Career {
+    title: string;
+    description: string;
+    responsibilities: string[];
+    skills: string[];
+    tasks: {
+      description: string;
+      difficulty: string;
+    }[];
+    quiz: {
+      question: string;
+      options: string[];
+      answer: string;
+    }[];
+  }
+
+  // Type definition for the API response structure (not needed with axios)
 
   return (
     <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 h-full">

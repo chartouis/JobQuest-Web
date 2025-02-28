@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const CareerDetailPage: React.FC = () => {
   // This would normally be fetched from an API based on the ID

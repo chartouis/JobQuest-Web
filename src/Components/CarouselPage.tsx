@@ -244,8 +244,8 @@ const CarouselPage: React.FC = () => {
           className="min-h-screen flex flex-col md:flex-row"
         >
           {/* Left side - Card Carousel */}
-          <div className="w-full md:w-1/2 flex items-center justify-center relative py-20">
-            <div className="relative h-96 w-full max-w-md flex items-center justify-center">
+          <div className="min-w-xl w-full md:w-2/3 flex items-center justify-center relative py-20">
+            <div className="relative  h-full w-full max-w-md flex items-center justify-center">
               {visibleItems().map((item: any) => {
                 let positionClass = "absolute transition-all duration-500";
 
@@ -272,13 +272,13 @@ const CarouselPage: React.FC = () => {
             </div>
 
             {/* Improved navigation controls for mobile and desktop */}
-            <div className="flex items-center justify-center w-full mt-8">
+            <div className="flex items-center justify-center w-96 mt-2">
               <div className="flex flex-row space-x-6 items-center">
                 <button
                   onClick={goToPrevious}
                   className={`p-4 rounded-full flex items-center justify-center ${
                     activeIndex > 0
-                      ? "bg-[#3fe881] hover:bg-opacity-80 text-[#07273c]"
+                      ? "bg-[#3fe881] hover:opacity-80 text-[#07273c]"
                       : "bg-gray-200 cursor-not-allowed text-gray-400"
                   }`}
                   disabled={activeIndex === 0}
@@ -308,7 +308,7 @@ const CarouselPage: React.FC = () => {
                   onClick={goToNext}
                   className={`p-4 rounded-full flex items-center justify-center ${
                     activeIndex < careerData.length - 1
-                      ? "bg-[#3fe881] hover:bg-opacity-80 text-[#07273c]"
+                      ? "bg-[#3fe881] hover:opacity-80 text-[#07273c]"
                       : "bg-gray-200 cursor-not-allowed text-gray-400"
                   }`}
                   disabled={activeIndex === careerData.length - 1}
