@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const MenuPage: React.FC = () => {
+
+  useEffect(()=>{
+    window.scrollTo(0, 0);
+  },[])
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
@@ -164,7 +169,7 @@ const MenuPage: React.FC = () => {
                 <h3 className="text-xl font-bold text-[#07273c] mb-2">
                   Healthcare
                 </h3>
-                <p className="text-gray-600">Nursing, Medical Tech, Therapy</p>
+                <p className="text-gray-600">Nursing, Medical Tech, Therapy, Pharmacy</p>
               </div>
             </Link>
 

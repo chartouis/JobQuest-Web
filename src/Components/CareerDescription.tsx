@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
+import { Link, useNavigate } from "react-router-dom";
 
 const CareerDetailPage: React.FC = () => {
   // This would normally be fetched from an API based on the ID
@@ -20,6 +21,7 @@ const CareerDetailPage: React.FC = () => {
   });
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const storedData = localStorage.getItem("aiPage");
 
     if (storedData) {
@@ -229,9 +231,11 @@ const CareerDetailPage: React.FC = () => {
               {careerDetail.title}, try out one of our interactive tasks to get
               hands-on experience!
             </p>
-            <button className="px-8 py-3 bg-[#3fe881] text-[#07273c] font-bold rounded-lg hover:bg-opacity-90 transition-colors shadow-lg">
-              Begin Interactive Experience
-            </button>
+            <Link to="/game">
+                <button className="px-8 py-3 bg-[#3fe881] text-[#07273c] font-bold rounded-lg hover:opacity-90 transition-colors shadow-lg">
+                  Begin Interactive Experience
+                </button>
+            </Link>
           </div>
         </div>
 

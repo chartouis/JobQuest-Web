@@ -1,9 +1,10 @@
+// DragDropBuilder.tsx
 import React, { useState, useCallback, useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { v4 as uuidv4 } from "uuid";
 
 // Define item types for drag and drop
-export const ItemTypes = {
+const ItemTypes = {
   HEADER: "header",
   PARAGRAPH: "paragraph",
   IMAGE: "image",
@@ -16,30 +17,24 @@ interface DragDropBuilderProps {
   onLayoutChange: (design: any) => void;
 }
 
-export interface DroppedItem {
-  id: string;
-  type: string;
-  text?: string;
-}
-
 // Component for draggable elements in the toolbox
-const DraggableElement: React.FC<{
+const DraggableElement = ({
+  type,
+  text,
+  color,
+}: {
   type: string;
   text: string;
   color: string;
-}> = ({ type, text, color }) => {
+}) => {
   const dragRef = useRef<HTMLDivElement>(null);
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }] = useDrag(() => ({
     type,
-    // Do not generate id here; let the drop zone generate a new one each drop
-    item: { type, text },
+    item: { type, id: uuidv4(), text },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }));
-
-  // Attach drag ref
-  drag(dragRef);
 
   return (
     <div
@@ -54,11 +49,15 @@ const DraggableElement: React.FC<{
 };
 
 // Component for the dropzone (canvas)
-const DropZone: React.FC<{
+const DropZone = ({
+  children,
+  onDrop,
+  className,
+}: {
   children: React.ReactNode;
   onDrop: (item: any) => void;
   className?: string;
-}> = ({ children, onDrop, className = "" }) => {
+}) => {
   const dropRef = useRef<HTMLDivElement | null>(null);
   const [{ isOver }, drop] = useDrop(() => ({
     accept: [
@@ -68,20 +67,15 @@ const DropZone: React.FC<{
       ItemTypes.BUTTON,
       ItemTypes.SIDEBAR,
     ],
-    drop: (item: any) => {
-      // Always generate a new id
-      const newItem = { ...item, id: uuidv4() };
-      console.log("Dropped item:", newItem);
-      onDrop(newItem);
+    drop: (item) => {
+      onDrop(item);
       return undefined;
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
   }));
-
-  drop(dropRef);
-
+  drop(dropRef)
   return (
     <div
       ref={dropRef}
@@ -96,10 +90,13 @@ const DropZone: React.FC<{
 };
 
 // Dropped element on the canvas
-const DroppedElement: React.FC<{
-  item: DroppedItem;
+const DroppedElement = ({
+  item,
+  onRemove,
+}: {
+  item: any;
   onRemove: () => void;
-}> = ({ item, onRemove }) => {
+}) => {
   const getElementStyle = (type: string) => {
     switch (type) {
       case ItemTypes.HEADER:
@@ -117,7 +114,7 @@ const DroppedElement: React.FC<{
     }
   };
 
-  const renderContent = (item: DroppedItem) => {
+  const renderContent = (item: any) => {
     if (item.type === ItemTypes.IMAGE) {
       return (
         <img
@@ -144,9 +141,10 @@ const DroppedElement: React.FC<{
 };
 
 const DragDropBuilder: React.FC<DragDropBuilderProps> = ({
+  
   onLayoutChange,
 }) => {
-  const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]);
+  const [droppedItems, setDroppedItems] = useState<any[]>([]);
 
   const handleDrop = useCallback(
     (item: any) => {
@@ -210,7 +208,8 @@ const DragDropBuilder: React.FC<DragDropBuilderProps> = ({
         <DropZone onDrop={handleDrop} className="bg-white rounded-xl shadow-md">
           {droppedItems.length === 0 ? (
             <div className="text-gray-400 text-center py-12">
-              Drag elements from the toolbox and drop them here to build your page
+              Drag elements from the toolbox and drop them here to build your
+              page
             </div>
           ) : (
             droppedItems.map((item) => (

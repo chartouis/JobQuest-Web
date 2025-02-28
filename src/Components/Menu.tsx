@@ -1,22 +1,25 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Header from "./Header";
-import axios from "axios";
-import { API_URL } from "../config";
+
+import { useEffect } from "react";
 
 const Menu = () => {
-  const nav = useNavigate();
-  const generatePage = async (career: string) => {
-    localStorage.setItem("wait", "true");
-    await axios
-      .post(API_URL + "/page?prof=" + career)
-      .then((resp) => {
-        const page = JSON.stringify(resp.data);
-        localStorage.setItem("aiPage", page);
-      })
-      .finally(() => {
-        nav("/career/description");
-      });
-  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+//   const generatePage = async (career: string) => {
+//     localStorage.setItem("wait", "true");
+//     await axios
+//       .post(API_URL + "/page?prof=" + career)
+//       .then((resp) => {
+//         const page = JSON.stringify(resp.data);
+//         localStorage.setItem("aiPage", page);
+//       })
+//       .finally(() => {
+//         nav("/career/description");
+//       });
+//   };
   return (
     <div className="min-h-screen bg-white">
       {/* Header is now imported as a component */}
@@ -216,14 +219,6 @@ const Menu = () => {
                   Master the art of mixology and create delicious cocktails
                   while providing excellent customer service.
                 </p>
-                <button
-                  onClick={() => {
-                    generatePage("Bartender");
-                  }}
-                  className="w-full py-2 bg-[#3fe881] text-[#07273c] font-medium rounded-lg hover:bg-opacity-80 transition-colors"
-                >
-                  Try This Career
-                </button>
               </div>
             </div>
 
@@ -253,14 +248,6 @@ const Menu = () => {
                   Build and maintain websites and applications using the latest
                   web technologies and frameworks.
                 </p>
-                <button
-                  onClick={() => {
-                    generatePage("Web Developer");
-                  }}
-                  className="w-full py-2 bg-[#3fe881] text-[#07273c] font-medium rounded-lg hover:bg-opacity-80 transition-colors"
-                >
-                  Try This Career
-                </button>
               </div>
             </div>
 
@@ -290,21 +277,8 @@ const Menu = () => {
                   Provide essential healthcare services and compassionate
                   patient care in various medical settings.
                 </p>
-                <button
-                  onClick={() => {
-                    generatePage("Nurse");
-                  }}
-                  className="w-full py-2 bg-[#3fe881] text-[#07273c] font-medium rounded-lg hover:bg-opacity-80 transition-colors"
-                >
-                  Try This Career
-                </button>
               </div>
             </div>
-          </div>
-          <div className="mt-12 text-center">
-            <button className="px-8 py-3 border-2 border-[#07273c] text-[#07273c] font-medium rounded-lg hover:bg-[#07273c] hover:text-white transition-colors">
-              View All Careers
-            </button>
           </div>
         </div>
       </div>

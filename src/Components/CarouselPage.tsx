@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Header from "./Header";
 import CarouselCard from "./CarouselCard";
 import CardDetailPanel from "./CardDetailPanel";
@@ -10,7 +10,7 @@ interface Career {
   fullDescription: string;
   skills: string[];
   icon: React.ReactNode;
-  resLink:string;
+  resLink: string;
 }
 
 const careerData: Career[] = [
@@ -172,8 +172,6 @@ const careerData: Career[] = [
 const CarouselPage: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement | null>(null);
-  const touchStartY = useRef(0);
-  const isScrolling = useRef(false);
 
   // Calculate which items to show based on active index
   const visibleItems = () => {
@@ -207,65 +205,19 @@ const CarouselPage: React.FC = () => {
     return items;
   };
 
-  const handleScroll = (
-    //event: WheelEvent
-  ) => {
-    // if (isScrolling.current) return;
-
-    // isScrolling.current = true;
-    // if (event.deltaY > 0 && activeIndex < careerData.length - 1) {
-    //   // Scroll down
-    //   setActiveIndex((prev) => prev + 1);
-    // } else if (event.deltaY < 0 && activeIndex > 0) {
-    //   // Scroll up
-    //   setActiveIndex((prev) => prev - 1);
-    // }
-
-    // // Debounce scroll events
-    // setTimeout(() => {
-    //   isScrolling.current = false;
-    // }, 500);
-  };
-
-  // Touch handlers for mobile
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    touchStartY.current = e.touches[0].clientY;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (isScrolling.current) return;
-
-    const touchY = e.touches[0].clientY;
-    const diff = touchStartY.current - touchY;
-
-    // Minimum swipe distance to trigger change
-    if (Math.abs(diff) > 50) {
-      isScrolling.current = true;
-
-      if (diff > 0 && activeIndex < careerData.length - 1) {
-        // Swipe up - move down
-        setActiveIndex((prev) => prev + 1);
-      } else if (diff < 0 && activeIndex > 0) {
-        // Swipe down - move up
-        setActiveIndex((prev) => prev - 1);
-      }
-
-      // Debounce
-      setTimeout(() => {
-        isScrolling.current = false;
-      }, 500);
+  // Function to navigate to the previous card
+  const goToPrevious = () => {
+    if (activeIndex > 0) {
+      setActiveIndex((prev) => prev - 1);
     }
   };
 
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (carousel) {
-      carousel.addEventListener("wheel", handleScroll, { passive: true });
-      return () => {
-        carousel.removeEventListener("wheel", handleScroll);
-      };
+  // Function to navigate to the next card
+  const goToNext = () => {
+    if (activeIndex < careerData.length - 1) {
+      setActiveIndex((prev) => prev + 1);
     }
-  }, [activeIndex]);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -281,7 +233,7 @@ const CarouselPage: React.FC = () => {
             </h1>
             <p className="text-[#07273c] text-xl max-w-3xl mx-auto text-center">
               Discover and experience different careers before making your
-              decision. Scroll through options below to learn more.
+              decision. Use the navigation buttons to browse options.
             </p>
           </div>
         </div>
@@ -290,8 +242,6 @@ const CarouselPage: React.FC = () => {
         <div
           ref={carouselRef}
           className="min-h-screen flex flex-col md:flex-row"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
         >
           {/* Left side - Card Carousel */}
           <div className="w-full md:w-1/2 flex items-center justify-center relative py-20">
@@ -321,69 +271,65 @@ const CarouselPage: React.FC = () => {
               })}
             </div>
 
-            {/* Scroll indicators */}
-            <div className="absolute right-8 h-40 flex flex-col items-center justify-between">
-              <button
-                onClick={() =>
-                  !isScrolling.current &&
-                  activeIndex > 0 &&
-                  setActiveIndex((prev) => prev - 1)
-                }
-                className={`p-2 rounded-full ${
-                  activeIndex > 0
-                    ? "bg-[#3fe881] hover:bg-opacity-80"
-                    : "bg-gray-200 cursor-not-allowed"
-                }`}
-                disabled={activeIndex === 0}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-[#07273c]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            {/* Improved navigation controls for mobile and desktop */}
+            <div className="flex items-center justify-center w-full mt-8">
+              <div className="flex flex-row space-x-6 items-center">
+                <button
+                  onClick={goToPrevious}
+                  className={`p-4 rounded-full flex items-center justify-center ${
+                    activeIndex > 0
+                      ? "bg-[#3fe881] hover:bg-opacity-80 text-[#07273c]"
+                      : "bg-gray-200 cursor-not-allowed text-gray-400"
+                  }`}
+                  disabled={activeIndex === 0}
+                  aria-label="Previous card"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 15l7-7 7 7"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
 
-              <div className="text-sm font-medium text-[#07273c]">
-                {activeIndex + 1} / {careerData.length}
+                <div className="text-lg font-medium text-[#07273c]">
+                  {activeIndex + 1} / {careerData.length}
+                </div>
+
+                <button
+                  onClick={goToNext}
+                  className={`p-4 rounded-full flex items-center justify-center ${
+                    activeIndex < careerData.length - 1
+                      ? "bg-[#3fe881] hover:bg-opacity-80 text-[#07273c]"
+                      : "bg-gray-200 cursor-not-allowed text-gray-400"
+                  }`}
+                  disabled={activeIndex === careerData.length - 1}
+                  aria-label="Next card"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
               </div>
-
-              <button
-                onClick={() =>
-                  !isScrolling.current &&
-                  activeIndex < careerData.length - 1 &&
-                  setActiveIndex((prev) => prev + 1)
-                }
-                className={`p-2 rounded-full ${
-                  activeIndex < careerData.length - 1
-                    ? "bg-[#3fe881] hover:bg-opacity-80"
-                    : "bg-gray-200 cursor-not-allowed"
-                }`}
-                disabled={activeIndex === careerData.length - 1}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-[#07273c]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
             </div>
           </div>
 
@@ -392,8 +338,6 @@ const CarouselPage: React.FC = () => {
             <CardDetailPanel activeCard={careerData[activeIndex]} />
           </div>
         </div>
-
-
 
         {/* Footer */}
         <footer className="bg-gray-100 py-6">
